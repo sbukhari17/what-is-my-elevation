@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>What is my Elevation?</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <style>
+  #main {
+    margin-top: 50px;
+    text-align: center;
+}
+</style>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+</head>
+<body style="background-image: url('jlusk-mountains.jpg');background-size:cover;">
+  <div class="container">
+    <div class="jumbotron" style=" background: rgb(200, 200, 200);   background: rgba(200, 200, 200, 0.5); ">
+      <div class="display-2" id="main">What is my Elevation?</div>
+      <br />
+      <div class="container text-center">
+        <div id="test" class="display-4" >
+          Click the button below to use your current location to find your elevation
+          <br />
+          <a href="#" onclick="getLocation()" class="btn btn-secondary btn-lg" role="button" aria-pressed=true>Use my current location</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  var x = document.getElementById('test')
+  function getLocation(){
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(getElevation);
+   } else {
+       x.innerHTML = "Geolocation is not supported by this browser.";
+   }
+ }
+ function getElevation(position){
+   var elevator = new google.maps.ElevationService;
+   var geocoder = new google.maps.Geocoder;
+   var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+   elevator.getElevationForLocations({
+     'locations':[latLng]
+   }, function(results,status){
+      if(status == 'OK'){
+        geocoder.geocode({'location': latLng}, function(results2, status2) {
+          if (status2 === 'OK') {
+            if (results[0]) {
+              x.innerHTML =
+              results2[1].formatted_address +
+              '<br />Elevation: ' + (results[0].elevation/0.3048).toFixed(2) + ' ft'
+              + '<br />Latitude: ' + (position.coords.latitude < 0 ? ((position.coords.latitude.toFixed(2) * - 1.0 ) + " S") :
+              position.coords.latitude.toFixed(2) + " N")
+              + '<br />Longitude: ' + (position.coords.longitude < 0 ? ((position.coords.longitude.toFixed(2) * - 1.0 ) + " W") :
+              position.coords.longitude.toFixed(2) + " E")
+              ;
+            }
+        }});
+      }
+   });
+ }
+
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFo1USjlWOWVBc5Pbw9SGfTEY93qddZIk&callback=initMap"
+    async defer></script>
+</body>
+</html>
